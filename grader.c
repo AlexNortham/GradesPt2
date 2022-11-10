@@ -23,10 +23,10 @@ int main(int argc, char **argv)
     char line[128];
     printf("Checking data.\n");
     printf("Computing averages.\n");
-    for (int i = 0; i < nstudents; i++)
+    for (int i = 0; i < nstudents; i++) // iterates through the lines for however many students there are
     {
         char line[128];
-        fgets(line, 128, filePointer);
+        fgets(line, 128, filePointer); // gets line from file
         int studentid = validateID(line);
         int score = split(line, ngrades);
         fprintf(outputPointer, " %d %d\n", studentid, score); // writes data to file
@@ -70,7 +70,8 @@ int validateCommandline(int argc, char **argv)
     int nstudents;
     int ngrades;
     int x;
-    if (!(nstudents = atoi(argv[1])))
+    char *filename;
+    if (!(nstudents = atoi(argv[1]))) // checks that
     {
         valid = 0;
     }
@@ -78,7 +79,12 @@ int validateCommandline(int argc, char **argv)
     {
         valid = 0;
     }
-    if (x = atoi(argv[4])){
+    if (!(filename = argv[3]))
+    {
+        valid = 0;
+    }
+    if (x = atoi(argv[4]))
+    {
         valid = 0;
     }
     if (valid == 0)
@@ -147,8 +153,9 @@ int split(char line[128], int ngrades)
             if (line[index] == ' ' || line[index] == '\n')
             {
                 int score = atoi(num);
-                if(score < 0 || score > 100){
-                    printf("Found an invalid grade: id %d grade %d. Exiting.\n", studentid,score );
+                if ((score < 0 || score > 100) && score != -1)
+                {
+                    printf("Found an invalid grade: id %d grade %d. Exiting.\n", atoi(studentid), score);
                     exit(0);
                 }
                 if (score < 20 && score != -1)
