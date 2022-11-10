@@ -3,14 +3,20 @@
 #include <string.h>
 #include <unistd.h>
 
+int split(char line[128], int ngrades);
+
+int validateID(char line[128]);
+
+int validateCommandline(int argc, char **argv);
+
 int main(int argc, char **argv)
 {
     remove("averages.txt"); // tries to remove existing averages text file
     validateCommandline(argc, argv);
     FILE *filePointer;
     filePointer = fopen(argv[3], "r");
-    int nstudents = argv[1];
-    int ngrades = argv[2];
+    int nstudents = atoi(argv[1]);
+    int ngrades = atoi(argv[2]);
     FILE *outputPointer = fopen("averages.txt", "w");
     printf("Input file. Opening.\n");
     printf("Output file. Opening.\n");
@@ -19,19 +25,17 @@ int main(int argc, char **argv)
     printf("Computing averages.\n");
     for (int i = 0; i < nstudents; i++)
     {
-        char line[128] = fgets(line, 128, filePointer);
+        char line[128];
+        fgets(line, 128, filePointer);
         int studentid = validateID(line);
         int score = split(line, ngrades);
-        fprintf(outputPointer, " %d %d\n", studentid, score);//writes data to file
-        printf("Correcting student %d grade %d\n",studentid,score);
+        fprintf(outputPointer, " %d %d\n", studentid, score); // writes data to file
     }
     fclose(filePointer);
     fclose(outputPointer);
     printf("Input file. Closing.\n");
     printf("Output file. Closing.\n");
 }
-
-int validateID(char line[128]);
 
 int validateID(char line[128])
 {
@@ -65,12 +69,16 @@ int validateCommandline(int argc, char **argv)
     int valid = 1;
     int nstudents;
     int ngrades;
-    if (!(nstudents = argv[1]))
+    int x;
+    if (!(nstudents = atoi(argv[1])))
     {
         valid = 0;
     }
-    if (!(ngrades = argv[2]))
+    if (!(ngrades = atoi(argv[2])))
     {
+        valid = 0;
+    }
+    if (x = atoi(argv[4])){
         valid = 0;
     }
     if (valid == 0)
@@ -96,8 +104,6 @@ int validateCommandline(int argc, char **argv)
     }
     return 0;
 }
-
-int split(char line[128], int ngrades);
 
 int split(char line[128], int ngrades)
 {
@@ -141,12 +147,18 @@ int split(char line[128], int ngrades)
             if (line[index] == ' ' || line[index] == '\n')
             {
                 int score = atoi(num);
+                if(score < 0 || score > 100){
+                    printf("Found an invalid grade: id %d grade %d. Exiting.\n", studentid,score );
+                    exit(0);
+                }
                 if (score < 20 && score != -1)
                 { // rounds outliers to stop them affecting the average
+                    printf("Correcting student %d grade %d\n", atoi(studentid), score);
                     score = 20;
                 }
                 else if (score > 90)
                 {
+                    printf("Correcting student %d grade %d\n", atoi(studentid), score);
                     score = 90;
                 }
                 if (score != -1)
@@ -166,24 +178,7 @@ int split(char line[128], int ngrades)
             }
             index++;
         } while (numAmount < ngrades);
-        int score = atoi(num);
-        if (score < 20 && score != -1)
-        { // rounds outliers to stop them affecting the average
-            score = 20;
-        }
-        else if (score > 90)
-        {
-            score = 90;
-        }
-        if (score != -1)
-        {
-            total = total + score;
-            divider++;
-        }
-        memset(num, 0, 64);
-        numIndex = 0;
-        amount++;
-        numAmount++;
+
         float average = (float)total / (float)divider; // calculates the average score in decimal form
         int finalAvg = (int)average;
         if ((average - finalAvg) >= 0.5)
@@ -191,8 +186,10 @@ int split(char line[128], int ngrades)
             finalAvg++;
         }
         return finalAvg;
-    }else{
-        printf("Found an invalid student id: %s. Exiting.\n",studentid);
+    }
+    else
+    {
+        printf("Found an invalid student id: %s. Exiting.\n", studentid);
         exit(0);
         remove("averages.txt");
     }
