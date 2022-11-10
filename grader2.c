@@ -20,7 +20,6 @@ int main(int argc, char **argv)
     FILE *outputPointer = fopen("averages.txt", "w");
     printf("Input file. Opening.\n");
     printf("Output file. Opening.\n");
-    char line[128];
     printf("Checking data.\n");
     printf("Computing averages.\n");
     for (int i = 0; i < nstudents; i++) // iterates through the lines for however many students there are
@@ -83,7 +82,7 @@ int validateCommandline(int argc, char **argv)
     {
         valid = 0;
     }
-    if (x = atoi(argv[4]))
+    if ((x = atoi(argv[4])))
     {
         valid = 0;
     }
